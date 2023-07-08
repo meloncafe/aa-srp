@@ -441,7 +441,9 @@ def srp_request_change_payout(
             if form.is_valid():
                 srp_payout = form.cleaned_data["value"]
 
-                srp_request.payout_amount = srp_payout
+                new_payout = srp_request.loss_amount * (float(srp_payout) / 100)
+
+                srp_request.payout_amount = new_payout
                 srp_request.save()
 
                 data.append({"success": True})

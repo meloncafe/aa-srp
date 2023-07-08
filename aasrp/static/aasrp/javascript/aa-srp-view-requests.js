@@ -202,6 +202,25 @@ $(document).ready(() => {
     const _refreshSrpAmountField = (element, newValue) => {
         newValue = parseInt(newValue);
 
+        // Get SRP Request Code
+        const srpRequestCode = element.closest('tr').attr('data-srp-request-code');
+
+        // Get ISK Lost amount from zkillboard
+        const zkillboardLossAmountElement = element.closest('tr').find('.srp-request-zbk-loss-amount');
+
+        let zkillboardLossAmountValue = 0;
+
+        zkillboardLossAmountElement.each((i, zkillboardLossAmountElement) => {
+            const zkillboardLossAmountText = zkillboardLossAmountElement.innerText;
+            const zkillboardLossText = zkillboardLossAmountText.replace(' ISK', '').replaceAll(',', '');
+            zkillboardLossAmountValue = parseInt(zkillboardLossText);
+        });
+
+        // New value is percentage of zkillboard loss amount
+        if (newValue > 0 && newValue <= 200) {
+            newValue = (zkillboardLossAmountValue / 100) * newValue;
+        }
+
         // Update payout value formatted
         const newValueFormatted = newValue.toLocaleString() + ' ISK';
 
