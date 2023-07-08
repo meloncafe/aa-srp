@@ -217,9 +217,7 @@ $(document).ready(() => {
         });
 
         // New value is percentage of zkillboard loss amount
-        if (newValue > 0 && newValue <= 200) {
-            newValue = (zkillboardLossAmountValue / 100) * newValue;
-        }
+        newValue = (zkillboardLossAmountValue / 100) * newValue;
 
         // Update payout value formatted
         const newValueFormatted = newValue.toLocaleString() + ' ISK';
