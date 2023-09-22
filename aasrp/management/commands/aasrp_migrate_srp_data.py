@@ -27,12 +27,20 @@ def get_input(text):
 
 
 class Command(BaseCommand):
-    help = "Migrate srp data from the built-in SRP module"
+    """
+    Migrate SRP data from the built-in SRP module
+    """
 
-    def _migrate_srp_data(self) -> None:
+    help = "Migrate SRP data from the built-in SRP module"
+
+    def _migrate_srp_data(  # pylint: disable=too-many-locals, too-many-statements
+        self,
+    ) -> None:
         """
         Migrate srp data from the built-in SRP module
+
         :return:
+        :rtype:
         """
 
         srp_links_migrated = 0
@@ -69,12 +77,12 @@ class Command(BaseCommand):
 
                     # Also fix the missing SRP code, we need it!
                     srp_fleet.fleet_srp_code = get_random_string(
-                        length=8
-                    )  # 8 chars only because old SRP link
+                        length=8  # 8 chars only because it's an old SRP link
+                    )
 
                 srp_fleet_srp_code = srp_fleet.fleet_srp_code
 
-                self.stdout.write(f"Migrating SRP fleet {srp_fleet_srp_code} ...")
+                self.stdout.write(f"Migrating SRP fleet {srp_fleet_srp_code} …")
 
                 try:
                     srp_link = SrpLink.objects.get(srp_code=srp_fleet_srp_code)
@@ -93,7 +101,7 @@ class Command(BaseCommand):
                     srp_link.creator = srp_fleet_creator
                     srp_link.save()
 
-                    # Mark migrated SRP link as COMPLETED and save the object
+                    # Mark migrated the SRP link as COMPLETED and save the object
                     srp_fleet.fleet_srp_status = "Completed"
                     srp_fleet.save()
 
@@ -109,14 +117,17 @@ class Command(BaseCommand):
 
                 for srp_userrequest in srp_userrequests:
                     # Let's see if the creator is still valid
-                    # Returns None when the creators account has been deleted
+                    # Returns None when the creators' account has been deleted
                     # and no sentinel user can be created or obtained
                     # in this case, we cannot create the request again
                     srp_userrequest_creator = get_user_for_character(
                         character=srp_userrequest.character
                     )
 
-                    if srp_userrequest_creator is not None:
+                    if (
+                        srp_userrequest_creator is not None
+                        and srp_userrequest.character is not None
+                    ):
                         srp_userrequest_killboard_link = srp_userrequest.killboard_link
 
                         try:
@@ -143,13 +154,13 @@ class Command(BaseCommand):
 
                                 (
                                     ship_type_id,
-                                    ship_value,
-                                    victim_id,
+                                    ship_value,  # pylint: disable=unused-variable
+                                    victim_id,  # pylint: disable=unused-variable
                                 ) = SrpManager.get_kill_data(srp_kill_link)
 
                                 (
                                     srp_userrequest_ship,
-                                    created_from_esi,
+                                    created_from_esi,  # pylint: disable=unused-variable
                                 ) = EveType.objects.get_or_create_esi(id=ship_type_id)
 
                             srp_userrequest_post_time = srp_userrequest.post_time
@@ -197,11 +208,16 @@ class Command(BaseCommand):
         self.stdout.write(f"SRP requests migrated: {srp_requests_migrated}")
         self.stdout.write(f"SRP requests skipped: {srp_requests_skipped}")
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # pylint: disable=unused-argument
         """
         Ask before running ...
+
         :param args:
+        :type args:
         :param options:
+        :type options:
+        :return:
+        :rtype:
         """
 
         self.stdout.write(

@@ -27,11 +27,19 @@ def get_formatted_character_name(
 ) -> str:
     """
     Get character name with alliance and corp ticker
+
     :param character:
+    :type character:
     :param with_portrait:
+    :type with_portrait:
     :param with_copy_icon:
+    :type with_copy_icon:
     :param portrait_size:
+    :type portrait_size:
     :param inline:
+    :type inline:
+    :return:
+    :rtype:
     """
 
     try:
@@ -89,12 +97,17 @@ def get_formatted_character_name(
 def get_main_for_character(character: EveCharacter) -> Optional[EveCharacter]:
     """
     Get the main character for a given eve character
+
     :param character:
+    :type character:
+    :return:
+    :rtype:
     """
 
     try:
         userprofile = character.character_ownership.user.profile
     except (
+        AttributeError,
         EveCharacter.character_ownership.RelatedObjectDoesNotExist,
         CharacterOwnership.user.RelatedObjectDoesNotExist,
     ):
@@ -106,13 +119,17 @@ def get_main_for_character(character: EveCharacter) -> Optional[EveCharacter]:
 def get_user_for_character(character: EveCharacter) -> User:
     """
     Get the user for a character
+
     :param character:
+    :type character:
     :return:
+    :rtype:
     """
 
     try:
         userprofile = character.character_ownership.user.profile
     except (
+        AttributeError,
         EveCharacter.character_ownership.RelatedObjectDoesNotExist,
         CharacterOwnership.user.RelatedObjectDoesNotExist,
     ):
@@ -124,6 +141,7 @@ def get_user_for_character(character: EveCharacter) -> User:
 def get_main_character_from_user(user: User) -> str:
     """
     Get the main character from a user
+
     :param user:
     :type user:
     :return:

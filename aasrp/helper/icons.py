@@ -8,25 +8,33 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
+# Alliance Auth
+from allianceauth.authentication.decorators import permissions_required
+
 # AA SRP
 from aasrp.models import SrpLink, SrpRequest
 
 
 @login_required
-@permission_required(
-    "aasrp.basic_access", "aasrp.manage_srp_requests", "aasrp.manage_srp"
-)
+@permission_required("aasrp.basic_access")
 def get_dashboard_action_icons(request: WSGIRequest, srp_link: SrpLink) -> str:
     """
     Getting the action buttons for the dashboard view
+
     :param request:
+    :type request:
     :param srp_link:
+    :type srp_link:
+    :return:
+    :rtype:
     """
 
     actions = ""
 
     if srp_link.srp_status == SrpLink.Status.ACTIVE:
-        button_request_url = reverse("aasrp:request_srp", args=[srp_link.srp_code])
+        button_request_url = reverse(
+            viewname="aasrp:request_srp", args=[srp_link.srp_code]
+        )
         btn_icon = '<i class="fas fa-hand-holding-usd"></i>'
         btn_title = _("Request SRP")
         actions += (
@@ -38,7 +46,9 @@ def get_dashboard_action_icons(request: WSGIRequest, srp_link: SrpLink) -> str:
     if request.user.has_perm("aasrp.manage_srp") or request.user.has_perm(
         "aasrp.manage_srp_requests"
     ):
-        button_view_url = reverse("aasrp:view_srp_requests", args=[srp_link.srp_code])
+        button_view_url = reverse(
+            viewname="aasrp:view_srp_requests", args=[srp_link.srp_code]
+        )
         btn_icon = '<i class="fas fa-eye"></i>'
         btn_title = _("View SRP Requests")
         actions += (
@@ -51,7 +61,7 @@ def get_dashboard_action_icons(request: WSGIRequest, srp_link: SrpLink) -> str:
             if request.user.has_perm("aasrp.manage_srp"):
                 if srp_link.srp_status == SrpLink.Status.ACTIVE:
                     button_edit_url = reverse(
-                        "aasrp:edit_srp_link", args=[srp_link.srp_code]
+                        viewname="aasrp:edit_srp_link", args=[srp_link.srp_code]
                     )
                     btn_icon = '<i class="far fa-newspaper"></i>'
                     btn_title = _("Add/Change AAR Link")
@@ -62,7 +72,7 @@ def get_dashboard_action_icons(request: WSGIRequest, srp_link: SrpLink) -> str:
                     )
 
                     button_disable_url = reverse(
-                        "aasrp:disable_srp_link", args=[srp_link.srp_code]
+                        viewname="aasrp:disable_srp_link", args=[srp_link.srp_code]
                     )
                     btn_icon = '<i class="fas fa-ban"></i>'
                     btn_title = _("Disable SRP Link")
@@ -80,7 +90,7 @@ def get_dashboard_action_icons(request: WSGIRequest, srp_link: SrpLink) -> str:
 
                 if srp_link.srp_status == SrpLink.Status.CLOSED:
                     button_enable_url = reverse(
-                        "aasrp:enable_srp_link", args=[srp_link.srp_code]
+                        viewname="aasrp:enable_srp_link", args=[srp_link.srp_code]
                     )
                     btn_icon = '<i class="fas fa-check"></i>'
                     btn_title = _("Enable SRP Link")
@@ -97,7 +107,7 @@ def get_dashboard_action_icons(request: WSGIRequest, srp_link: SrpLink) -> str:
                     )
 
                 button_remove_url = reverse(
-                    "aasrp:delete_srp_link", args=[srp_link.srp_code]
+                    viewname="aasrp:delete_srp_link", args=[srp_link.srp_code]
                 )
                 btn_icon = '<i class="far fa-trash-alt"></i>'
                 btn_title = _("Remove SRP Link")
@@ -118,12 +128,18 @@ def get_dashboard_action_icons(request: WSGIRequest, srp_link: SrpLink) -> str:
 
 @login_required
 @permission_required("aasrp.basic_access")
-def get_srp_request_status_icon(request: WSGIRequest, srp_request: SrpRequest) -> str:
+def get_srp_request_status_icon(
+    request: WSGIRequest, srp_request: SrpRequest  # pylint: disable=unused-argument
+) -> str:
     """
     Get status icon for srp request
+
     :param request:
+    :type request:
     :param srp_request:
+    :type srp_request:
     :return:
+    :rtype:
     """
 
     request_status_icon_title = _("SRP Request Pending")
@@ -160,17 +176,25 @@ def get_srp_request_status_icon(request: WSGIRequest, srp_request: SrpRequest) -
 @login_required
 @permission_required("aasrp.basic_access")
 def get_srp_request_details_icon(
-    request: WSGIRequest, srp_link: SrpLink, srp_request: SrpRequest
+    request: WSGIRequest,  # pylint: disable=unused-argument
+    srp_link: SrpLink,
+    srp_request: SrpRequest,
 ) -> str:
     """
     Get details icon for an SRP request
+
     :param request:
+    :type request:
     :param srp_link:
+    :type srp_link:
     :param srp_request:
+    :type srp_request:
+    :return:
+    :rtype:
     """
 
     button_request_details_url = reverse(
-        "aasrp:ajax_srp_request_additional_information",
+        viewname="aasrp:ajax_srp_request_additional_information",
         args=[srp_link.srp_code, srp_request.request_code],
     )
 
@@ -190,17 +214,25 @@ def get_srp_request_details_icon(
 @login_required
 @permission_required("aasrp.basic_access")
 def get_srp_request_accept_icon(
-    request: WSGIRequest, srp_link: SrpLink, srp_request: SrpRequest
+    request: WSGIRequest,  # pylint: disable=unused-argument
+    srp_link: SrpLink,
+    srp_request: SrpRequest,
 ) -> str:
     """
     Get accept icon for an SRP request
+
     :param request:
+    :type request:
     :param srp_link:
+    :type srp_link:
     :param srp_request:
+    :type srp_request:
+    :return:
+    :rtype:
     """
 
     button_request_accept_url = reverse(
-        "aasrp:ajax_srp_request_approve",
+        viewname="aasrp:ajax_srp_request_approve",
         args=[srp_link.srp_code, srp_request.request_code],
     )
 
@@ -231,17 +263,25 @@ def get_srp_request_accept_icon(
 @login_required
 @permission_required("aasrp.basic_access")
 def get_srp_request_reject_icon(
-    request: WSGIRequest, srp_link: SrpLink, srp_request: SrpRequest
+    request: WSGIRequest,  # pylint: disable=unused-argument
+    srp_link: SrpLink,
+    srp_request: SrpRequest,
 ) -> str:
     """
     Get reject icon for an SRP request
+
     :param request:
+    :type request:
     :param srp_link:
+    :type srp_link:
     :param srp_request:
+    :type srp_request:
+    :return:
+    :rtype:
     """
 
     button_request_reject_url = reverse(
-        "aasrp:ajax_srp_request_deny",
+        viewname="aasrp:ajax_srp_request_deny",
         args=[srp_link.srp_code, srp_request.request_code],
     )
 
@@ -266,17 +306,25 @@ def get_srp_request_reject_icon(
 @login_required
 @permission_required("aasrp.basic_access")
 def get_srp_request_delete_icon(
-    request: WSGIRequest, srp_link: SrpLink, srp_request: SrpRequest
+    request: WSGIRequest,  # pylint: disable=unused-argument
+    srp_link: SrpLink,
+    srp_request: SrpRequest,
 ) -> str:
     """
     Get delete icon for an SRP request
+
     :param request:
+    :type request:
     :param srp_link:
+    :type srp_link:
     :param srp_request:
+    :type srp_request:
+    :return:
+    :rtype:
     """
 
     button_request_delete_url = reverse(
-        "aasrp:ajax_srp_request_remove",
+        viewname="aasrp:ajax_srp_request_remove",
         args=[srp_link.srp_code, srp_request.request_code],
     )
 
@@ -295,15 +343,21 @@ def get_srp_request_delete_icon(
 
 
 @login_required
-@permission_required("aasrp.manage_srp_requests", "aasrp.manage_srp")
+@permissions_required(("aasrp.manage_srp_requests", "aasrp.manage_srp"))
 def get_srp_request_action_icons(
     request: WSGIRequest, srp_link: SrpLink, srp_request: SrpRequest
 ) -> str:
     """
     Get action icons for srp requests
+
     :param request:
+    :type request:
     :param srp_link:
+    :type srp_link:
     :param srp_request:
+    :type srp_request:
+    :return:
+    :rtype:
     """
 
     srp_request_action_icons = get_srp_request_details_icon(

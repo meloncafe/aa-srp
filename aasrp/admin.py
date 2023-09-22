@@ -21,30 +21,41 @@ def custom_filter(title):
 
     class Wrapper(admin.FieldListFilter):
         """
-        Custom_filter :: wrapper
+        Custom_filter wrapper
         """
 
         def expected_parameters(self):
             """
             Expected parameters
+
             :return:
             :rtype:
             """
 
-            pass
+            pass  # pylint: disable=unnecessary-pass
 
         def choices(self, changelist):
             """
             Choices
+
             :param changelist:
             :type changelist:
             :return:
             :rtype:
             """
 
-            pass
+            pass  # pylint: disable=unnecessary-pass
 
         def __new__(cls, *args, **kwargs):
+            """
+            New instance
+
+            :param args:
+            :type args:
+            :param kwargs:
+            :type kwargs:
+            """
+
             instance = admin.FieldListFilter.create(*args, **kwargs)
             instance.title = title
 
@@ -60,9 +71,10 @@ class SingletonModelAdmin(admin.ModelAdmin):
 
     actions = None  # Removes the default delete action.
 
-    def has_add_permission(self, request):
+    def has_add_permission(self, request):  # pylint: disable=unused-argument
         """
         Has "add" permissions
+
         :param request:
         :type request:
         :return:
@@ -71,9 +83,12 @@ class SingletonModelAdmin(admin.ModelAdmin):
 
         return self.model.objects.all().count() == 0
 
-    def has_change_permission(self, request, obj=None):
+    def has_change_permission(
+        self, request, obj=None  # pylint: disable=unused-argument
+    ):
         """
         Has "change" permissions
+
         :param request:
         :type request:
         :param obj:
@@ -84,9 +99,12 @@ class SingletonModelAdmin(admin.ModelAdmin):
 
         return True
 
-    def has_delete_permission(self, request, obj=None):
+    def has_delete_permission(
+        self, request, obj=None  # pylint: disable=unused-argument
+    ):
         """
         Has "delete" permissions
+
         :param request:
         :type request:
         :param obj:
@@ -121,6 +139,15 @@ class SrpLinkAdmin(admin.ModelAdmin):
     @classmethod
     @admin.display(description=_("Creator"), ordering="creator")
     def _creator(cls, obj):
+        """
+        Display the creator name
+
+        :param obj:
+        :type obj:
+        :return:
+        :rtype:
+        """
+
         creator_name = obj.creator
 
         if obj.creator.profile.main_character:
@@ -161,6 +188,15 @@ class SrpRequestAdmin(admin.ModelAdmin):
     @classmethod
     @admin.display(description=_("Requestor"), ordering="creator")
     def _creator(cls, obj):
+        """
+        Display the creator name
+
+        :param obj:
+        :type obj:
+        :return:
+        :rtype:
+        """
+
         creator_name = obj.creator
 
         if obj.creator.profile.main_character:
@@ -194,6 +230,7 @@ class FleetTypeAdmin(admin.ModelAdmin):
     def _name(self, obj):
         """
         Rewrite name
+
         :param obj:
         :type obj:
         :return:
@@ -206,6 +243,7 @@ class FleetTypeAdmin(admin.ModelAdmin):
     def _is_enabled(self, obj):
         """
         Rewrite is_enabled
+
         :param obj:
         :type obj:
         :return:
@@ -220,6 +258,7 @@ class FleetTypeAdmin(admin.ModelAdmin):
     def activate(self, request, queryset):
         """
         Mark fleet type as active
+
         :param request:
         :type request:
         :param queryset:
@@ -237,26 +276,26 @@ class FleetTypeAdmin(admin.ModelAdmin):
                 obj.save()
 
                 notifications_count += 1
-            except Exception:
+            except Exception:  # pylint: disable=broad-exception-caught
                 failed += 1
 
         if failed:
             messages.error(
-                request,
-                ngettext(
-                    "Failed to activate {failed} fleet type",
-                    "Failed to activate {failed} fleet types",
-                    failed,
+                request=request,
+                message=ngettext(
+                    singular="Failed to activate {failed} fleet type",
+                    plural="Failed to activate {failed} fleet types",
+                    number=failed,
                 ).format(failed=failed),
             )
 
         if queryset.count() - failed > 0:
             messages.success(
-                request,
-                ngettext(
-                    "Activated {notifications_count} fleet type",
-                    "Activated {notifications_count} fleet types",
-                    notifications_count,
+                request=request,
+                message=ngettext(
+                    singular="Activated {notifications_count} fleet type",
+                    plural="Activated {notifications_count} fleet types",
+                    number=notifications_count,
                 ).format(notifications_count=notifications_count),
             )
 
@@ -264,6 +303,7 @@ class FleetTypeAdmin(admin.ModelAdmin):
     def deactivate(self, request, queryset):
         """
         Mark fleet type as inactive
+
         :param request:
         :type request:
         :param queryset:
@@ -281,26 +321,26 @@ class FleetTypeAdmin(admin.ModelAdmin):
                 obj.save()
 
                 notifications_count += 1
-            except Exception:
+            except Exception:  # pylint: disable=broad-exception-caught
                 failed += 1
 
         if failed:
             messages.error(
-                request,
-                ngettext(
-                    "Failed to deactivate {failed} fleet type",
-                    "Failed to deactivate {failed} fleet types",
-                    failed,
+                request=request,
+                message=ngettext(
+                    singular="Failed to deactivate {failed} fleet type",
+                    plural="Failed to deactivate {failed} fleet types",
+                    number=failed,
                 ).format(failed=failed),
             )
 
         if queryset.count() - failed > 0:
             messages.success(
-                request,
-                ngettext(
-                    "Deactivated {notifications_count} fleet type",
-                    "Deactivated {notifications_count} fleet types",
-                    notifications_count,
+                request=request,
+                message=ngettext(
+                    singular="Deactivated {notifications_count} fleet type",
+                    plural="Deactivated {notifications_count} fleet types",
+                    number=notifications_count,
                 ).format(notifications_count=notifications_count),
             )
 
